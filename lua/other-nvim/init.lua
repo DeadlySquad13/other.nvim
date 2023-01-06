@@ -83,12 +83,24 @@ local findOther = function(filename, context)
 			-- additional glob-patterns in the target are respected
 			if vim.fn.isdirectory(result) ~= 0 then
 				result = result .. "*"
+      else
+        if options.create_file_if_missing then
+          local file = io.open(result, "w")
+          if not file then
+            vim.notify('Could not create file '..result, vim.log.levels.ERROR, {
+              title = 'other.nvim',
+            })
+          else
+            file:close()
+          end
+        end
 			end
 
 			local mappingMatches = vim.fn.glob(result, true, true)
+      P(mappingMatches)
 
 			for _, value in pairs(mappingMatches) do
-				-- check wether the file is already added to the result
+				-- check whether the file is already added to the result
 				local found = false
 				for _, checkValue in pairs(matches) do
 					vim.inspect(checkValue)
